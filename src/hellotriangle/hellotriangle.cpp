@@ -42,6 +42,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Check if GLAD is initializated
+	// ALL CODE BELOW THIS
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -50,10 +51,20 @@ int main()
 
 	float vertices[] =
 	{
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
+		0.5f, 0.5f, 0.0f, // top right
+		0.5f, -0.5f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f, // bottom left
+		-0.5f, 0.5f, 0.0f // top left
 	};
+
+	unsigned int indices[] =
+	{
+		0, 1, 3,
+		1, 2, 3
+	};
+
+	// Draw in wireframe mode
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// vertex buffer
 	unsigned int VBO;
@@ -142,6 +153,13 @@ int main()
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
+	// EBO
+
+		unsigned int EBO;
+		glGenBuffers(1, &EBO);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
 	// Main render loop
@@ -153,7 +171,8 @@ int main()
 		// render commands
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// call events and swap buffers
 		glfwSwapBuffers(window);
